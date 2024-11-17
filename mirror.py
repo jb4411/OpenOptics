@@ -3,12 +3,12 @@ from sympy import symbols, Eq, solve
 from general import OpticsObj, SurfaceShape
 from general import SurfaceShape as SS
 
-class Lens(OpticsObj):
+class Mirror(OpticsObj):
     shape: SurfaceShape
     R_abs: int | float | None
 
-    def __init__(self, x: int | float | None, y: int | float | None,
-                 shape: SurfaceShape, R_abs: int | float | None = None):
+    def __init__(self, shape: SurfaceShape, R_abs: int | float | None = None,
+                 x: int | float | None = None, y: int | float | None = None):
         super().__init__(x, y)
 
         self.shape = shape

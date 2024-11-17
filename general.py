@@ -11,9 +11,6 @@ import kaleido
 from sympy import symbols, Eq, solve
 
 
-
-
-
 class SurfaceShape(Enum):
     FLAT = 0
     CONVEX = 1
