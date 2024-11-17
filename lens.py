@@ -86,6 +86,25 @@ class ThinLens(OpticsObj):
         self.lens2.y = self.y
 
 
+def get_double_convex(n1, n2, R1_abs, R2_abs):
+    return ThinLens(Lens(SS.CONVEX, n1, R1_abs), Lens(SS.CONCAVE, n2, R2_abs))
+
+
+def get_double_concave(n1, n2, R1_abs, R2_abs):
+    return ThinLens(Lens(SS.CONCAVE, n1, R1_abs), Lens(SS.CONVEX, n2, R2_abs))
+
+
+def lens_maker_get_f(n1, n2, R1, R2):
+    if R1 is None:
+        inverse_f = ((n2 / n1) - 1) * (0 - (1 / R2))
+    elif R2 is None:
+        inverse_f = ((n2 / n1) - 1) * ((1 / R1) - 0)
+    else:
+        inverse_f = ((n2 / n1) - 1) * ((1 / R1) - (1 / R2))
+    f = 1 / inverse_f
+    return f
+
+
 def full_lens_makers_equation(f=None, n1=None, n2=None, R1=None, R2=None):
     solve_for = []
     if f is None:

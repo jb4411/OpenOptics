@@ -1,4 +1,4 @@
-from lens import ThinLens, full_lens_makers_equation, all_lens_equations
+from lens import ThinLens, full_lens_makers_equation, all_lens_equations, lens_maker_get_f
 from mirror import Mirror, spherical_mirror_equation
 
 
@@ -47,7 +47,8 @@ class CompoundSystem:
             if isinstance(optic, ThinLens):
                 # TODO - deal with len made of two different materials
                 R1, R2 = optic.get_Rs(ray_x)
-                fj, n1, n2, R1, R2 = full_lens_makers_equation(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2)
+                #fj, n1, n2, R1, R2 = full_lens_makers_equation(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2)
+                fj = lens_maker_get_f(n_atm, optic.lens1.n, R1, R2)
                 dij = (doj * fj) / (doj - fj)
 
                 #f, n1, n2, R1, R2, do, di, m, ho, hi = all_lens_equations(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2, do=doj, ho=hij)
@@ -56,7 +57,10 @@ class CompoundSystem:
                 # fj = f
 
                 show_relative_output(j, doj, dij, fj, suffix, "lens")
-                doj = self.distances[idx + inc] - dij
+                if 0 <= idx + inc < len(self.optics):
+                    doj = self.distances[idx + inc] - dij
+                else:
+                    doj = None
 
             elif isinstance(optic, Mirror):
                 R = optic.get_R()
