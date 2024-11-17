@@ -66,7 +66,7 @@ def spherical_mirror_equation(R=None, f=None, do=None, di=None, m=None, ho=None,
 
     equations = [eq2, eq3a, eq3b, eq3c, eq4]
 
-    sol_dict = solve(equations, solve_for, dict=True)
+    sol_dict = solve(equations, solve_for, dict=True)[0]
 
     results = []
     for elem in [R, f, do, di, m, ho, hi]:

@@ -59,8 +59,8 @@ class ThinLens(OpticsObj):
     lens1: Lens
     lens2: Lens
 
-    def __init__(self, x: int | float | None, y: int | float | None,
-                 lens1: Lens, lens2: Lens):
+    def __init__(self,lens1: Lens, lens2: Lens,
+                 x: int | float | None = None, y: int | float | None = None):
         super().__init__(x, y)
 
         self.lens1 = lens1
@@ -78,6 +78,12 @@ class ThinLens(OpticsObj):
 
     def get_Cs(self):
         return self.lens1.get_C(), self.lens2.get_C()
+
+    def update_child_coords(self):
+        self.lens1.x = self.x
+        self.lens1.y = self.y
+        self.lens2.x = self.x
+        self.lens2.y = self.y
 
 
 def full_lens_makers_equation(f=None, n1=None, n2=None, R1=None, R2=None):
@@ -99,12 +105,12 @@ def full_lens_makers_equation(f=None, n1=None, n2=None, R1=None, R2=None):
         solve_for.append(R2)
 
     eq = Eq(1 / f, ((n2 / n1) - 1) * ((1 / R1) - (1 / R2)))
-    sol_dict = solve(eq, solve_for, dict=True)
+    sol_dict = solve(eq, solve_for, dict=True)[0]
 
     results = []
     for elem in [f, n1, n2, R1, R2]:
         if elem in sol_dict:
-            results.append(sol_dict[elem])
+            results.append(float(sol_dict[elem]))
         else:
             results.append(elem)
 
@@ -157,7 +163,7 @@ def all_lens_equations(f=None, n1=None, n2=None, R1=None, R2=None, do=None, di=N
 
     equations = [eq, eq4, eq5a, eq5b, eq5c]
 
-    sol_dict = solve(equations, solve_for, dict=True)
+    sol_dict = solve(equations, solve_for, dict=True)[0]
 
     results = []
     for elem in [f, n1, n2, R1, R2, do, di, m, ho, hi]:

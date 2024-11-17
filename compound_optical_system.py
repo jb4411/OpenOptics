@@ -23,11 +23,13 @@ class CompoundSystem:
 
         optic.x = x
         optic.y = y
+        if isinstance(optic, ThinLens):
+            optic.update_child_coords()
         self.optics.append(optic)
 
         self.distances.append(distance_from_last_element)
 
-    def evaluate_system(self, n_atm=1):
+    def evaluate(self, n_atm=1):
         idx = 0
         j = 1
         dij = 0
@@ -36,38 +38,45 @@ class CompoundSystem:
         suffix = ''
         #hoj = self.ho
         hij = self.ho
+        doj = self.distances[0]
 
-        # start of loop
-        doj = self.distances[idx] - dij
-        optic = self.optics[idx]
+        while idx < len(self.optics) and idx >= 0:
+            # start of loop
+            optic = self.optics[idx]
 
-        if isinstance(optic, ThinLens):
-            # TODO - deal with len made of two different materials
-            R1, R2 = optic.get_Rs(ray_x)
-            #f, n1, n2, R1, R2 = full_lens_makers_equation(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2)
-            f, n1, n2, R1, R2, do, di, m, ho, hi = all_lens_equations(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2,
-                                                                      do=doj, ho=hij)
-            dij = di
-            hij = hi
-            fj = f
-            show_relative_output(idx, j, doj, dij, fj, suffix, "lens")
+            if isinstance(optic, ThinLens):
+                # TODO - deal with len made of two different materials
+                R1, R2 = optic.get_Rs(ray_x)
+                fj, n1, n2, R1, R2 = full_lens_makers_equation(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2)
+                dij = (doj * fj) / (doj - fj)
 
-        elif isinstance(optic, Mirror):
-            suffix += "'"
-            inc *= -1
-            R = optic.get_R()
-            R, f, do, di, m, ho, hi = spherical_mirror_equation(R=R, do=doj, ho=hij)
-            dij = di
-            hij = hi
-            fj = f
-            show_relative_output(idx, j, doj, dij, fj, suffix, "mirror")
+                #f, n1, n2, R1, R2, do, di, m, ho, hi = all_lens_equations(n1=n_atm, n2=optic.lens1.n, R1=R1, R2=R2, do=doj, ho=hij)
+                # dij = di
+                # hij = hi
+                # fj = f
 
-        # end of loop
-        ray_x += self.distances[idx]
-        idx += inc
-        j += inc
+                show_relative_output(j, doj, dij, fj, suffix, "lens")
+                doj = self.distances[idx + inc] - dij
 
-def show_relative_output(idx, j, doj, dij, fj, suffix, name):
+            elif isinstance(optic, Mirror):
+                R = optic.get_R()
+                R, f, do, di, m, ho, hi = spherical_mirror_equation(R=R, do=doj, ho=hij)
+                dij = di
+                hij = hi
+                fj = f
+                show_relative_output(j, doj, dij, fj, suffix, "mirror")
+
+                suffix += "'"
+                inc *= -1
+                doj = self.distances[idx] - dij
+
+            # end of loop
+            ray_x += inc * self.distances[idx]
+            idx += inc
+            j += inc
+
+
+def show_relative_output(j, doj, dij, fj, suffix, name):
     if doj < 0:
         obj_type = "VIRTUAL object"
     else:
@@ -78,6 +87,6 @@ def show_relative_output(idx, j, doj, dij, fj, suffix, name):
     else:
         img_type = "REAL image"
 
-    print(f"{'\n' if idx > 0 else ''}Relative to {name} {j}:")
+    print(f"\nRelative to {name} {j}:")
     print(f"\tdo({j}{suffix}) = {doj}, {obj_type}, f({j}) = {fj}")
     print(f"\tdi({j}{suffix}) = {dij}, {img_type}")
