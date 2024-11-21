@@ -1,5 +1,5 @@
 from compound_optical_system import CompoundSystem
-from constants import n_flint_glass, n_crown_glass, n_polystyrene
+from constants import n_flint_glass, n_crown_glass, n_polystyrene, n_air
 from lens import ThinLens, Lens, get_double_convex, get_double_concave
 from general import SurfaceShape as SS
 from mirror import Mirror
@@ -72,10 +72,45 @@ def test_activity_8_p2():
 
     system2.evaluate()
 
+def exam1a():
+    system = CompoundSystem()
+
+    ho = 5  # cm
+    system.add_object(ho)
+
+    do = 18
+
+    lens = get_double_convex(n_flint_glass, n_flint_glass, 60, 60)
+    system.add_optic(lens, do)
+
+    system.evaluate()
+
+
+def exam1b():
+    system = CompoundSystem()
+
+    ho = 5  # cm
+    do = 16  # cm
+    D12 = 10  # cm
+
+    n_lens = 1.55
+    R_abs1 = 15  # cm
+    lens1 = get_double_concave(n_lens, n_lens, R_abs1, R_abs1)
+
+    R_abs2 = 20  # cm
+    lens2 = get_double_convex(n_lens, n_lens, R_abs2, R_abs2)
+
+    system.add_object(ho)
+    system.add_optic(lens1, do)
+    system.add_optic(lens2, D12)
+
+    system.evaluate(n_atm=1.33)
+
 
 
 def main():
-    test_activity_8_p2()
+    #test_activity_8_p2()
+    exam1b()
 
 
 if __name__ == '__main__':

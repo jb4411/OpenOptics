@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import plotly
 import plotly.graph_objects as go
-import kaleido
+#import kaleido
 
 from sympy import symbols, Eq, solve
 
